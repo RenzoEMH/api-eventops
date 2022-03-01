@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 
+import { eventRouter } from './api/routes/index.js';
+
 /**
  * Mongoose
  */
@@ -21,12 +23,15 @@ mongoose.connection.on('error', (e) => {
 const app = express();
 
 // Middlewares
+app.use(express.json());
 
 // rutas
 
 app.get('/', (req, res) => {
   res.send('API EVENTOPS');
 });
+
+app.use('/api', eventRouter);
 
 // configurar el puerto donde se escuchara
 const PORT = process.env.PORT || 5000;

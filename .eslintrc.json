@@ -31,6 +31,12 @@
     "func-names": "off",
     "no-plusplus": "off",
     "no-process-exit": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "allowShowCircuit": true,
+    "import/extensions": [
+      "error",
+      "always",
+      {"ignorePackages": true}
+    ]
   }
 }
