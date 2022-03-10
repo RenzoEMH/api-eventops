@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 
-import { eventRouter } from './api/routes/index.js';
+import { eventRouter , userRouter } from './api/routes/index.js';
 
 /**
  * Mongoose
@@ -32,6 +32,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', eventRouter);
+app.use("/api", userRouter);
 
 // configurar el puerto donde se escuchara
 const PORT = process.env.PORT || 5000;
