@@ -21,3 +21,19 @@ export const createEvent = async (request, response) => {
     response.status(500).json({ error });
   }
 };
+
+// Controller edit an event
+export const updateEvent = async (request, response) => {
+  const eventValueToUpdate = request.body;
+  const { id: eventId } = request.params;
+  try {
+    const event = await Event.findById(eventId);
+    Event.updateOne(event, eventValueToUpdate, (error, updatedEvent) => {
+      !error
+        ? response.status(200).json(updatedEvent)
+        : response.status(500).send(error);
+    });
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+};

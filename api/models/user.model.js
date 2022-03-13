@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-const usersSchema = new Schema({
+const usersSchema = new Schema(
+  {
     name: String,
     lastname: String,
     email: String,
@@ -11,9 +12,11 @@ const usersSchema = new Schema({
     dni: String,
     type: String,
     estado: Boolean,
-    createdAt: { type: Date, immutable: true, default: () => Date.now() },
-    updatedAt: { type: Date, default: () => Date.now() },
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const User = mongoose.model('Users', usersSchema, 'users');
 
