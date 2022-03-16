@@ -32,7 +32,7 @@ export const login = async (req, res) => {
   });
 };
 
-// Controller get all events
+// Controller get all users
 export const getAllUsers = async (request, response) => {
   try {
     const users = await User.find();
@@ -43,7 +43,7 @@ export const getAllUsers = async (request, response) => {
   }
 };
 
-// Controller create an event
+// Controller create an user
 export const createUser = async (request, response) => {
   const { password } = request.body;
   const hash = await bcrypt.hash(password, 10);
@@ -54,5 +54,23 @@ export const createUser = async (request, response) => {
     newUser && response.status(201).json(newUser);
   } catch (error) {
     response.status(500).json({ error });
+  }
+};
+
+//Controller update an user
+export const updateUser = async (request, response) => {
+  const { id: idUser } = request.params;
+  const userToUpdate = request.body;
+
+  const user = await User.findById(idUser);
+
+  try {
+    User.updateOne(user, userToUpdate, (error, updatedUser) => {
+      if (!error) {
+        response.status(200).json(updatedUser);
+      } else response.status(500).send(error);
+    });
+  } catch (error) {
+    response.status(500).send(error);
   }
 };
