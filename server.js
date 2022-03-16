@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import cors from 'cors';
 
-import { eventRouter, userRouter } from './api/routes/index.js';
+import { eventRouter, userRouter, slideRouter } from './api/routes/index.js';
 
 /**
  * Mongoose
@@ -35,6 +35,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', eventRouter);
 app.use('/api', userRouter);
+app.use('/api', slideRouter);
 
 // configurar el puerto donde se escuchara
 const PORT = process.env.PORT || 5000;
