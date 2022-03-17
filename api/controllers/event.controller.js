@@ -21,3 +21,30 @@ export const createEvent = async (request, response) => {
     response.status(500).json({ error });
   }
 };
+
+// Controller edit an event
+export const updateEvent = async (request, response) => {
+  const eventValueToUpdate = request.body;
+  const { id: eventId } = request.params;
+  try {
+    const eventFound = await Event.findById(eventId);
+    if (eventFound) {
+      eventFound.dates = [...eventValueToUpdate.dates];
+      const updatedEvent = await eventFound.save();
+      updatedEvent && delete eventValueToUpdate.dates;
+      updatedEvent &&
+        Event.updateOne(
+          { _id: eventFound._id },
+          eventValueToUpdate,
+          null,
+          (error, result) => {
+            !error
+              ? response.status(200).json(result)
+              : response.status(500).send(error);
+          }
+        );
+    } else throw { error: 'no event found' };
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+};
