@@ -1,6 +1,9 @@
 import { User } from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import senderMail from '../services/sendEmail.js';
+import Token from '../models/token.model.js';
+import crypto from 'crypto';
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -48,9 +51,15 @@ export const createUser = async (request, response) => {
   const { password } = request.body;
   const hash = await bcrypt.hash(password, 10);
   const newUser = new User({ ...request.body, password: hash });
-
+  let user = await User.findOne({ email: request.body.email });
   try {
-    await newUser.save();
+    user = await newUser.save();
+    const token = await new Token({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString('hex'),
+    }).save();
+    const url = `${process.env.BASE_URL}${user.id}/verify/${token.token}`;
+    await senderMail(user.email, 'Verify Email', url);
     newUser && response.status(201).json(newUser);
   } catch (error) {
     response.status(500).json({ error });
@@ -72,5 +81,78 @@ export const updateUser = async (request, response) => {
     });
   } catch (error) {
     response.status(500).send(error);
+  }
+};
+
+//Controller verify email
+export const verifyEmail = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) return res.status(400).send({ message: 'Invalid link' });
+    const token = await Token.findOne({
+      userId: user._id,
+      token: req.params.token,
+    });
+    if (!token) return res.status(400).send({ message: 'Invalid link' });
+    await User.updateOne({ _id: user._id }, { verified: true });
+    await token.remove();
+    res.status(200).send({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+};
+
+// Controller generate link for password recovery
+export const linkResetPassword = async (req, res) => {
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res
+        .status(409)
+        .send({ message: 'User with given email does not exist!' });
+    }
+    let token = await Token.findOne({ userId: user._id });
+    if (!token) {
+      token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString('hex'),
+      }).save();
+    }
+
+    const url = `${process.env.BASE_URL}password-reset/${user._id}/${token.token}`;
+    await senderMail(user.email, 'Password Reset', url);
+
+    res
+      .status(200)
+      .send({ message: 'Password reset link sent to your email account' });
+  } catch (error) {
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+};
+
+// Controller reset password
+export const resetPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) return res.status(400).send({ message: 'Invalid link' });
+
+    const token = await Token.findOne({
+      userId: user._id,
+      token: req.params.token,
+    });
+    if (!token) return res.status(400).send({ message: 'Invalid link' });
+
+    if (!user.verified) user.verified = true;
+
+    const hashPassword = await bcrypt.hash(req.body.password, 10);
+
+    user.password = hashPassword;
+    await user.save();
+    await token.remove();
+
+    res.status(200).send({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).send({ message: 'Internal Server Error' });
   }
 };

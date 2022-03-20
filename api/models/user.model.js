@@ -12,6 +12,7 @@ const usersSchema = new Schema(
     dni: String,
     type: String,
     estado: Boolean,
+    verified: Boolean,
   },
   {
     timestamps: true,
