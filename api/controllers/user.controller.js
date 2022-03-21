@@ -10,9 +10,15 @@ export const login = async (req, res) => {
 
   const user = await User.find({ email });
   const userDB = user[0];
-
-  if (user.length === 0) res.status(403).send();
-
+  if (user.length === 0)
+    return res.status(403).send({ message: 'Correo invalido' });
+  if (userDB.verified === false)
+    return res
+      .status(403)
+      .send({
+        message:
+          'Usuario no verificado, revise su correo para activar su cuenta',
+      });
   // Validate hash
   bcrypt.compare(password, userDB.password, (err, isPassValid) => {
     if (email === userDB.email && isPassValid) {
@@ -30,7 +36,7 @@ export const login = async (req, res) => {
         }
       );
     } else {
-      res.status(403).send();
+      res.status(403).send({ message: 'Contraseña invalida' });
     }
   });
 };
@@ -60,6 +66,7 @@ export const createUser = async (request, response) => {
     }).save();
     const url = `${process.env.BASE_URL}${user.id}/verify/${token.token}`;
     await senderMail(user.email, 'Verify Email', url);
+    console.log(url);
     newUser && response.status(201).json(newUser);
   } catch (error) {
     response.status(500).json({ error });
@@ -93,7 +100,9 @@ export const verifyEmail = async (req, res) => {
       userId: user._id,
       token: req.params.token,
     });
-    if (!token) return res.status(400).send({ message: 'Invalid link' });
+    if (token === null) {
+      return res.status(400).send({ message: 'Invalid link' });
+    }
     await User.updateOne({ _id: user._id }, { verified: true });
     await token.remove();
     res.status(200).send({ message: 'Email verified successfully' });
