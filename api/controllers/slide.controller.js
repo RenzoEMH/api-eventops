@@ -38,25 +38,9 @@ export const updateSlide = async (request, response) => {
             : response.status(500).send(error);
         }
       );
-    if (!slideFound) {
-      response.status(404).send()
-      }
   } catch (error) {
     response.status(500).json({ error });
   }
 };
 
 // Controller delete slide
-export const deleteSlide = async (req, res) => {
-  const { id: slideId } = req.params;
-  console.log(slideId);
-
-  try {
-    const slideToDelete = await Slide.findById(slideId);
-    if (!slideToDelete) res.status(204).json({ error: 'No slide to delete' });
-    const deletedSlide = await Slide.deleteOne(slideToDelete);
-    if (deletedSlide) res.status(200).json(deletedSlide);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
