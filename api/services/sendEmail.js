@@ -17,7 +17,7 @@ const senderMail = (email, subject, text) => {
       from: process.env.EMAIL_FROM,
       to: email,
       subject: subject,
-      text: text,
+      html: `${text}`,
     });
     console.log('email sent successfully');
   } catch (error) {

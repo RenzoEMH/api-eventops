@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import senderMail from '../services/sendEmail.js';
 import Token from '../models/token.model.js';
 import crypto from 'crypto';
+import { EmailConfirmation } from '../utils/emailConfirmation.js';
+import { setPassword } from '../utils/setPassword.js';
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -13,12 +15,9 @@ export const login = async (req, res) => {
   if (user.length === 0)
     return res.status(403).send({ message: 'Correo invalido' });
   if (userDB.verified === false)
-    return res
-      .status(403)
-      .send({
-        message:
-          'Usuario no verificado, revise su correo para activar su cuenta',
-      });
+    return res.status(403).send({
+      message: 'Usuario no verificado, revise su correo para activar su cuenta',
+    });
   // Validate hash
   bcrypt.compare(password, userDB.password, (err, isPassValid) => {
     if (email === userDB.email && isPassValid) {
@@ -65,7 +64,8 @@ export const createUser = async (request, response) => {
       token: crypto.randomBytes(32).toString('hex'),
     }).save();
     const url = `${process.env.BASE_URL}${user.id}/verify/${token.token}`;
-    await senderMail(user.email, 'Verify Email', url);
+    const html = EmailConfirmation(url);
+    await senderMail(user.email, 'Verificación de cuenta - EVENTOPS', html);
     console.log(url);
     newUser && response.status(201).json(newUser);
   } catch (error) {
@@ -130,7 +130,8 @@ export const linkResetPassword = async (req, res) => {
     }
 
     const url = `${process.env.BASE_URL}password-reset/${user._id}/${token.token}`;
-    await senderMail(user.email, 'Password Reset', url);
+    const html = setPassword(url);
+    await senderMail(user.email, 'Recuperación de contraseña - EVENTOPS', html);
 
     res
       .status(200)
