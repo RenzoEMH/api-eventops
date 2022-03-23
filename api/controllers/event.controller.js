@@ -29,10 +29,22 @@ export const updateEvent = async (request, response) => {
   try {
     const eventFound = await Event.findById(eventId);
     if (eventFound) {
-      eventFound.dates = [...eventValueToUpdate.dates];
-      const updatedEvent = await eventFound.save();
-      updatedEvent && delete eventValueToUpdate.dates;
-      updatedEvent &&
+      if (eventValueToUpdate.dates) {
+        eventFound.dates = [...eventValueToUpdate.dates];
+        const updatedEvent = await eventFound.save();
+        updatedEvent && delete eventValueToUpdate.dates;
+        updatedEvent &&
+          Event.updateOne(
+            { _id: eventFound._id },
+            eventValueToUpdate,
+            null,
+            (error, result) => {
+              !error
+                ? response.status(200).json(result)
+                : response.status(500).send(error);
+            }
+          );
+      } else {
         Event.updateOne(
           { _id: eventFound._id },
           eventValueToUpdate,
@@ -43,6 +55,7 @@ export const updateEvent = async (request, response) => {
               : response.status(500).send(error);
           }
         );
+      }
     } else throw { error: 'no event found' };
   } catch (error) {
     response.status(500).json({ error });

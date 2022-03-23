@@ -2,9 +2,11 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import cors from 'cors';
+import sgMail from '@sendgrid/mail';
 
 import { eventRouter, userRouter, slideRouter } from './api/routes/index.js';
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 /**
  * Mongoose
  */
