@@ -4,7 +4,12 @@ import 'dotenv/config';
 import cors from 'cors';
 import sgMail from '@sendgrid/mail';
 
-import { eventRouter, userRouter, slideRouter } from './api/routes/index.js';
+import {
+  eventRouter,
+  userRouter,
+  slideRouter,
+  saleRouter,
+} from './api/routes/index.js';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 /**
@@ -38,6 +43,7 @@ app.get('/', (req, res) => {
 app.use('/api', eventRouter);
 app.use('/api', userRouter);
 app.use('/api', slideRouter);
+app.use('/api', saleRouter);
 
 // configurar el puerto donde se escuchara
 const PORT = process.env.PORT || 5000;
