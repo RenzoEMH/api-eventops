@@ -9,7 +9,7 @@ import {
   userRouter,
   slideRouter,
   saleRouter,
-  ticketRouter
+  ticketRouter,
 } from './api/routes/index.js';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -48,7 +48,7 @@ app.use('/api', saleRouter);
 app.use('/api', ticketRouter);
 
 // configurar el puerto donde se escuchara
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // lanzar servidor
 app.listen(PORT, () => {
