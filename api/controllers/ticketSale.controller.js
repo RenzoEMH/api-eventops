@@ -73,6 +73,7 @@ export const createSaleTicket = async (request, response) => {
             idSale: newSavedSale._id,
             idUsuario: userFound._id,
             idEvento: item.idEvento,
+            idDate: item.dateId,
             idCategory: item.categoryId,
             quantity: item.amount,
           };
