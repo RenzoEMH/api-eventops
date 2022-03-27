@@ -13,6 +13,7 @@ const usersSchema = new Schema(
     type: String,
     estado: Boolean,
     verified: Boolean,
+    phone: String
   },
   {
     timestamps: true,
