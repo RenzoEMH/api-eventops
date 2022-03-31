@@ -1,4 +1,4 @@
-import { Event } from '../models/index.js';
+import { Event, User } from '../models/index.js';
 
 // Controller get all events
 export const getAllEvents = async (request, response) => {
@@ -14,7 +14,9 @@ export const getAllEvents = async (request, response) => {
 // Controller create an event
 export const createEvent = async (request, response) => {
   try {
+    const userFound = await User.findById(request.body.idOwner);
     const event = new Event(request.body);
+    event.ownerName = `${userFound.name} ${userFound.lastname}`;
     const newEvent = await event.save();
     newEvent && response.status(201).json(newEvent);
   } catch (error) {
