@@ -1228,7 +1228,7 @@ export const setPassword = (url) => {
                                                                           </td>
                                                                       </tr>
                                                                       <tr>
-                                                                          <td class="esd-block-text es-p30b es-p30r es-p30l" esdev-links-color="#9f2d30" align="center"><a target="_blank" href="http://localhost:3000/" style="color: #9f2d30;">Visita nuestra web</a></td>
+                                                                          <td class="esd-block-text es-p30b es-p30r es-p30l" esdev-links-color="#9f2d30" align="center"><a target="_blank" href="${process.env.BASE_URL}" style="color: #9f2d30;">Visita nuestra web</a></td>
                                                                       </tr>
                                                                   </tbody>
                                                               </table>
