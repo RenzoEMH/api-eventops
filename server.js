@@ -1,8 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import cors from 'cors';
 import sgMail from '@sendgrid/mail';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 import {
   eventRouter,
@@ -13,6 +15,15 @@ import {
 } from './api/routes/index.js';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// config environments
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({
+  path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
+});
+
 /**
  * Mongoose
  */
